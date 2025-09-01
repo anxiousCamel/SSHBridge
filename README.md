@@ -28,20 +28,19 @@ Um microserviço em **Node.js + TypeScript** que expõe uma API REST para execut
   <img alt="API JSON" src="https://img.shields.io/badge/API-JSON-333333">
 </p>
 
-
 <!-- Gráfico Mermaid (compatível com GitHub) -->
 ```mermaid
 flowchart LR
-  client[REST client (curl/Postman/UI)] -->|JSON| fastify[Fastify server<br/>src/server.ts]
+  A[Cliente REST: curl / Postman / UI] -->|JSON| B[Fastify server src/server.ts]
 
-  subgraph R[Routes • src/routes/ssh.routes.ts]
+  subgraph R[Routes — src/routes/ssh.routes.ts]
     R1[/POST /v1/ssh/test/]
     R2[/POST /v1/ssh/exec/]
     R3[/POST /v1/ssh/exec-key/]
     R4[/POST /v1/ssh/facts/]
   end
 
-  fastify --> R
+  B --> R
 
   subgraph S[Services]
     S1[ssh.service.ts]
@@ -57,10 +56,12 @@ flowchart LR
   S4 --> S1
   S3 --> S1
 
-  S4 --> C[(LRU Cache<br/>utils/lru.ts)]
-  S1 -->|SSH exec| H[(Hosts via SSH)]
-  S2 -->|SFTP| H
+  C[(LRU Cache utils/lru.ts)]
+  S4 --> C
+  S1 --> H[(Hosts via SSH)]
+  S2 --> H
 
+```
 
 ## 🚀 Funcionalidades
 
