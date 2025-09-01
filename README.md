@@ -30,36 +30,60 @@ Um microserviço em **Node.js + TypeScript** que expõe uma API REST para execut
 
 <!-- Gráfico Mermaid (compatível com GitHub) -->
 ```mermaid
+  %%{init: {'flowchart': {'htmlLabels': false}} }%%
 flowchart LR
-  A[Cliente REST: curl / Postman / UI] -->|JSON| B[Fastify server src/server.ts]
+  A[Cliente REST: curl / Postman / UI] -->|JSON| B[Fastify server - src/server.ts]
 
-  subgraph R[Routes — src/routes/ssh.routes.ts]
-    R1[/POST /v1/ssh/test/]
-    R2[/POST /v1/ssh/exec/]
-    R3[/POST /v1/ssh/exec-key/]
-    R4[/POST /v1/ssh/facts/]
+  subgraph R0[Rotas]
+    direction TB
+
+    subgraph R1[src/routes/ssh.routes.ts]
+      RT1[/POST /v1/ssh/test/]
+      RT2[/POST /v1/ssh/exec/]
+      RT3[/POST /v1/ssh/exec-key/]
+      RT4[/POST /v1/ssh/facts/]
+    end
+
+    subgraph R2[src/routes/sftp.routes.ts]
+      RS1[/POST /v1/sftp/upload/]
+      RS2[/POST /v1/sftp/download/]
+    end
+
+    subgraph R3[src/routes/batch.routes.ts]
+      RB1[/POST /v1/batch/exec/]
+    end
   end
 
-  B --> R
+  B --> R1
+  B --> R2
+  B --> R3
 
   subgraph S[Services]
+    direction TB
     S1[ssh.service.ts]
     S2[sftp.service.ts]
     S3[batch.service.ts]
     S4[facts.service.ts]
   end
 
-  R1 --> S1
-  R2 --> S1
-  R3 --> S1
-  R4 --> S4
+  %% mapeamento rotas -> serviços
+  RT1 --> S1
+  RT2 --> S1
+  RT3 --> S1
+  RT4 --> S4
+  RS1 --> S2
+  RS2 --> S2
+  RB1 --> S3
+
+  %% dependências entre serviços
   S4 --> S1
   S3 --> S1
+  S4 --> C[(utils/lru.ts)]
 
-  C[(LRU Cache utils/lru.ts)]
-  S4 --> C
+  %% alvos finais
   S1 --> H[(Hosts via SSH)]
   S2 --> H
+
 
 ```
 
